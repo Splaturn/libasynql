@@ -1,19 +1,22 @@
 {
-    "name": "sof3/libasynql",
-    "type": "library",
-    "require": {
-        "pocketmine/pocketmine-mp": "^4.0.0"
-    },
-    "license": "Apache-2.0",
+	"name": "sof3/libasynql",
+	"type": "library",
+	"require": {
+		"pocketmine/bedrock-block-upgrade-schema": "dev-master",
+		"pocketmine/bedrock-data": "dev-modern-world-support",
+		"pocketmine/bedrock-item-upgrade-schema": "dev-master",
+		"pocketmine/pocketmine-mp": "^5.0.0-ALPHA"
+	},
+	"license": "Apache-2.0",
 	"autoload": {
 		"psr-0": {
 			"poggit\\libasynql\\": "libasynql/src/"
 		}
 	},
-    "authors": [
-        {
-            "name": "SOFe",
-            "email": "sofe2038@gmail.com"
-        }
-    ]
+	"authors": [
+		{
+			"name": "SOFe",
+			"email": "sofe2038@gmail.com"
+		}
+	]
 }
