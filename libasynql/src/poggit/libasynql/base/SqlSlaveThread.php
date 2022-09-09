@@ -55,17 +55,12 @@ abstract class SqlSlaveThread extends Thread implements SqlThread{
 		$this->bufferSend = $bufferSend ?? new QuerySendQueue();
 		$this->bufferRecv = $bufferRecv ?? new QueryRecvQueue();
 
-		if(!libasynql::isPackaged()){
-			/** @noinspection PhpUndefinedMethodInspection */
-			/** @noinspection NullPointerExceptionInspection */
-			/** @var ClassLoader $cl */
-			$cl = Server::getInstance()->getPluginManager()->getPlugin("DEVirion")->getVirionClassLoader();
-			$this->setClassLoaders([Server::getInstance()->getLoader(), $cl]);
-		}
 		$this->start(PTHREADS_INHERIT_INI | PTHREADS_INHERIT_CONSTANTS);
 	}
 
 	protected function onRun() : void{
+		// Composer vendor/* directory
+		require dirname(__DIR__, 7) . DIRECTORY_SEPARATOR . "autoload.php";
 		$error = $this->createConn($resource);
 		$this->connCreated = true;
 		$this->connError = $error;
