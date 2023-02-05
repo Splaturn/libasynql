@@ -2,7 +2,10 @@
     "name": "sof3/libasynql",
     "type": "library",
     "require": {
-        "pocketmine/pocketmine-mp": "^4.0.0"
+        "pocketmine/pocketmine-mp": "^5.0.0-ALPHA8@dev",
+		"pocketmine/bedrock-block-upgrade-schema": "dev-master@dev",
+		"pocketmine/bedrock-data": "dev-modern-world-support@dev",
+		"pocketmine/bedrock-item-upgrade-schema": "dev-master@dev"
     },
     "license": "Apache-2.0",
 	"autoload": {
