@@ -184,7 +184,7 @@ abstract class GenericStatementImpl implements GenericStatement, JsonSerializabl
 
 		foreach($this->variables as $variable){
 			if(!isset($usedNames[$variable->getName()])){
-				throw new InvalidArgumentException("The variable {$variable->getName()} is not used anywhere in the query! Check for typos.");
+				throw new InvalidArgumentException("The variable {$variable->getName()} is not used anywhere in the query \"{$this->name}\"! Check for typos.");
 			}
 		}
 	}
@@ -230,7 +230,7 @@ abstract class GenericStatementImpl implements GenericStatement, JsonSerializabl
 
 	protected abstract function formatVariable(GenericVariable $variable, $value, ?string $placeHolder, array &$outArgs) : string;
 
-	public function jsonSerialize() : array{
+	public function jsonSerialize(): array {
 		return [
 			"name" => $this->name,
 			"query" => $this->query,
