@@ -22,17 +22,16 @@ declare(strict_types=1);
 
 namespace poggit\libasynql\base;
 
-use Threaded;
 use function serialize;
 
-class QuerySendQueue extends Threaded{
+class QuerySendQueue extends \ThreadedBase{
 	/** @var bool */
 	private $invalidated = false;
-	/** @var Threaded */
-	private $queries;
+	/** @var \ThreadedArray<int, string> */
+	private \ThreadedArray $queries;
 
 	public function __construct(){
-		$this->queries = new Threaded();
+		$this->queries = new \ThreadedArray();
 	}
 
 	public function scheduleQuery(int $queryId, array $modes, array $queries, array $params) : void{
