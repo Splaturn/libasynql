@@ -276,6 +276,33 @@
             "time": "2023-02-01T21:11:39+00:00"
         },
         {
+            "name": "pocketmine/bedrock-block-upgrade-schema",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pmmp/BedrockBlockUpgradeSchema.git",
+                "reference": "63f5f5e02e952ffa196a4c0671d7fcf8b8cdd9a4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pmmp/BedrockBlockUpgradeSchema/zipball/63f5f5e02e952ffa196a4c0671d7fcf8b8cdd9a4",
+                "reference": "63f5f5e02e952ffa196a4c0671d7fcf8b8cdd9a4",
+                "shasum": ""
+            },
+            "default-branch": true,
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "CC0-1.0"
+            ],
+            "description": "Schemas describing how to upgrade saved block data in older Minecraft: Bedrock Edition world saves",
+            "support": {
+                "issues": "https://github.com/pmmp/BedrockBlockUpgradeSchema/issues",
+                "source": "https://github.com/pmmp/BedrockBlockUpgradeSchema/tree/master"
+            },
+            "time": "2022-08-07T19:29:31+00:00"
+        },
+        {
             "name": "pocketmine/bedrock-data",
             "version": "dev-modern-world-support",
             "source": {
@@ -611,6 +638,7 @@
                 "source": "https://github.com/pmmp/Language/tree/2.18.3"
             },
             "time": "2023-01-17T21:43:36+00:00"
+
         },
         {
             "name": "pocketmine/log",

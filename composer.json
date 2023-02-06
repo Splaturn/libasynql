@@ -14,10 +14,10 @@
 			"poggit\\libasynql\\": "libasynql/src/"
 		}
 	},
-    "authors": [
-        {
-            "name": "SOFe",
-            "email": "sofe2038@gmail.com"
-        }
-    ]
+	"authors": [
+		{
+			"name": "SOFe",
+			"email": "sofe2038@gmail.com"
+		}
+	]
 }
