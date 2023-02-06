@@ -34,6 +34,10 @@ class QueryRecvQueue extends \ThreadedBase{
 	/** @var \ThreadedArray<int, string>*/
 	private \ThreadedArray $results;
 
+	public function __construct(){
+		$this->results = new \ThreadedArray();
+	}
+
 	/**
 	 * @param SqlResult[] $results
 	 */
