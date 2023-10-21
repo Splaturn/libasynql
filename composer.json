@@ -1,5 +1,5 @@
 {
-    "name": "sof3/libasynql",
+    "name": "splaturn/libasynql",
     "type": "library",
     "require": {
         "pocketmine/pocketmine-mp": "^5.0.0-BETA4",
