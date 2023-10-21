@@ -22,13 +22,18 @@ declare(strict_types=1);
 
 namespace poggit\libasynql\mysqli;
 
-use AttachableThreadedLogger;
 use Closure;
+use ErrorException;
 use InvalidArgumentException;
 use mysqli;
 use mysqli_result;
+use mysqli_sql_exception;
 use mysqli_stmt;
+use pocketmine\errorhandler\ErrorToExceptionHandler;
+use pocketmine\snooze\SleeperHandlerEntry;
 use pocketmine\snooze\SleeperNotifier;
+use pocketmine\thread\log\AttachableThreadSafeLogger;
+use pocketmine\utils\Utils;
 use poggit\libasynql\base\QueryRecvQueue;
 use poggit\libasynql\base\QuerySendQueue;
 use poggit\libasynql\base\SqlSlaveThread;
@@ -60,20 +65,20 @@ use const PHP_INT_MAX;
 class MysqliThread extends SqlSlaveThread{
 	/** @var string */
 	private $credentials;
-	/** @var AttachableThreadedLogger */
+	/** @var AttachableThreadSafeLogger */
 	private $logger;
 
-	public static function createFactory(MysqlCredentials $credentials, AttachableThreadedLogger $logger) : Closure{
-		return function(SleeperNotifier $notifier, QuerySendQueue $bufferSend, QueryRecvQueue $bufferRecv) use ($credentials, $logger){
-			return new MysqliThread($credentials, $notifier, $logger, $bufferSend, $bufferRecv);
+	public static function createFactory(MysqlCredentials $credentials, AttachableThreadSafeLogger $logger) : Closure{
+		return function(SleeperHandlerEntry $sleeperEntry, QuerySendQueue $bufferSend, QueryRecvQueue $bufferRecv) use ($credentials, $logger){
+			return new MysqliThread($credentials, $sleeperEntry, $logger, $bufferSend, $bufferRecv);
 		};
 	}
 
-	public function __construct(MysqlCredentials $credentials, SleeperNotifier $notifier, AttachableThreadedLogger $logger, QuerySendQueue $bufferSend = null, QueryRecvQueue $bufferRecv = null){
+	public function __construct(MysqlCredentials $credentials, SleeperHandlerEntry $entry, AttachableThreadSafeLogger $logger, QuerySendQueue $bufferSend = null, QueryRecvQueue $bufferRecv = null){
 		$this->credentials = serialize($credentials);
 		$this->logger = $logger;
 
-		parent::__construct($notifier, $bufferSend, $bufferRecv);
+		parent::__construct($entry, $bufferSend, $bufferRecv);
 	}
 
 	protected function createConn(&$mysqli) : ?string{
@@ -92,7 +97,14 @@ class MysqliThread extends SqlSlaveThread{
 		assert($mysqli instanceof mysqli);
 		/** @var MysqlCredentials $cred */
 		$cred = unserialize($this->credentials);
-		if(!$mysqli->ping()){
+		$ping = false;
+
+		mysqli_report(MYSQLI_REPORT_OFF);
+		try {
+			$ping = @$mysqli->ping();
+		} catch (\mysqli_sql_exception $err){}
+		
+		if(!$ping){
 			$success = false;
 			$attempts = 0;
 			do{
@@ -111,8 +123,9 @@ class MysqliThread extends SqlSlaveThread{
 		}
 
 		if(count($params) === 0){
-			$result = $mysqli->query($query);
-			if($result === false){
+			try{
+				$result = Utils::assumeNotFalse($mysqli->query($query));
+			}catch(mysqli_sql_exception){
 				throw new SqlError(SqlError::STAGE_EXECUTE, $mysqli->error, $query, []);
 			}
 			switch($mode){
@@ -136,8 +149,9 @@ class MysqliThread extends SqlSlaveThread{
 					return $ret;
 			}
 		}else{
-			$stmt = $mysqli->prepare($query);
-			if(!($stmt instanceof mysqli_stmt)){
+			try{
+				$stmt = Utils::assumeNotFalse($mysqli->prepare($query));
+			}catch(mysqli_sql_exception){
 				throw new SqlError(SqlError::STAGE_PREPARE, $mysqli->error, $query, $params);
 			}
 			$types = implode(array_map(static function($param) use ($query, $params){
@@ -153,8 +167,10 @@ class MysqliThread extends SqlSlaveThread{
 				throw new SqlError(SqlError::STAGE_PREPARE, "Cannot bind value of type " . gettype($param), $query, $params);
 			}, $params));
 			$stmt->bind_param($types, ...$params);
-			if(!$stmt->execute()){
-				throw new SqlError(SqlError::STAGE_EXECUTE, $stmt->error, $query, $params);
+			try{
+				$stmt->execute();
+			}catch(mysqli_sql_exception){
+				throw new SqlError(SqlError::STAGE_EXECUTE, $mysqli->error, $query, $params);
 			}
 			switch($mode){
 				case SqlThread::MODE_GENERIC:
